@@ -30,7 +30,13 @@ pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 | `pyyaml` | 读取配置文件 |
 | `tqdm` / `matplotlib` | 训练进度条 / 曲线图与混淆矩阵图 |
 
-> 首次加载模型需联网下载（约 360MB）。国内环境脚本已自动使用 `hf-mirror.com` 镜像，并默认 `local_files_only` 离线读缓存。
+> 预训练模型需放在本地 `models/wav2vec2-base/`（约 360MB，已加入 `.gitignore`，不会随仓库上传）。首次使用前先下载到该目录，脚本已自动使用国内 `hf-mirror.com` 镜像加速：
+>
+> ```bash
+> huggingface-cli download facebook/wav2vec2-base --local-dir models/wav2vec2-base
+> ```
+>
+> 代码中 `local_files_only=True`（只读本地、不联网），故需先备好模型再运行。
 
 ---
 
@@ -124,7 +130,7 @@ python prepare.py --dry-run      # 只统计，不复制
 所有参数和路径集中在 **`config/wav2vec2.yaml`**，训练 / 测试 / 演示三个脚本共用：
 
 ```yaml
-model_name: facebook/wav2vec2-base
+model_name: models/wav2vec2-base     # 本地预训练模型路径（首次需先下载，见「环境」章节）
 data_root: datasets/IEMOCAP_PROCESSED
 class_labels: [angry, happy, sad, neutral]
 sample_rate: 16000
@@ -133,7 +139,7 @@ epochs: 10
 batch_size: 8
 learning_rate: 0.00003   # 即 3e-5（勿写 3e-5，PyYAML 会误解析成字符串）
 patience: 3
-checkpoint: checkpoints/WAV2VEC2_IEMOCAP_epoch1.pt
+checkpoint: checkpoints/WAV2VEC2_IEMOCAP_best.pt
 port: 5001
 ```
 
@@ -151,7 +157,7 @@ python train.py
 - 训练时用 tqdm 显示 batch 进度条，每轮打印耗时，结束打印总耗时
 - 每个 epoch 打印 `loss / UA / WA / F1 / WF1`，用**验证集（val）**做早停与选最优模型，**测试集（test）只做最终评估**
 - 训练结束自动生成训练曲线图 `img/training_curves.png`
-- 权重保存为 `checkpoints/WAV2VEC2_IEMOCAP_epoch<N>.pt`
+- 权重保存为 `checkpoints/WAV2VEC2_IEMOCAP_best.pt`（最优）与 `..._last.pt`（最新）
 
 ---
 
@@ -189,4 +195,4 @@ python app.py
 | F1 | 宏平均 F1 |
 | WF1 | 按类别样本数加权的 F1 |
 
-参考结果（`WAV2VEC2_IEMOCAP_epoch1.pt`，说话人独立）：**UA 62.35% / WA 60.27% / F1 60.96% / WF1 59.97%**。
+参考结果（`WAV2VEC2_IEMOCAP_best.pt`，说话人独立）：**UA 62.35% / WA 60.27% / F1 60.96% / WF1 59.97%**。
