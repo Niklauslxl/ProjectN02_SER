@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>语音情感识别 · wav2vec2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- ★ 改动：版本号 5 → 6，配合 CSS 显示 bug 修复，强制刷新缓存 -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='wav2vec2.css') }}?v=6">
+</head>
+<body>
+  <div class="atmosphere" aria-hidden="true"></div>
+
+  <header class="site-header reveal">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <h1>语音情感识别</h1>
+        <p class="subtitle">SPEECH EMOTION RECOGNITION · WAV2VEC2-BASE</p>
+      </div>
+    </div>
+    <p class="status" id="status"><span class="status-dot"></span>待命 READY</p>
+  </header>
+
+  <!-- ★ 布局规划：左边=语音输入模块，右边=波形展示 + 情感预测结果 -->
+  <main>
+    <!-- 左栏：语音输入模块（录音 / 上传） -->
+    <div class="col-left">
+      <section class="panel input-panel reveal">
+        <h2 class="panel-title">01 · 输入语音 INPUT</h2>
+        <div class="input-modes">
+          <div class="mode-card" id="record-card">
+            <div class="mode-icon rec-icon" aria-hidden="true"></div>
+            <div class="mode-info">
+              <h3 class="mode-title">实时录音</h3>
+              <p class="mode-desc" id="record-desc">点击开始录制，最长 8 秒</p>
+            </div>
+            <button class="action-btn record-btn" id="record-btn">
+              <span class="dot" aria-hidden="true"></span>开始录音
+            </button>
+          </div>
+          <div class="mode-card" id="upload-card">
+            <div class="mode-icon upload-icon" aria-hidden="true"></div>
+            <div class="mode-info">
+              <h3 class="mode-title">文件上传</h3>
+              <p class="mode-desc" id="upload-desc">支持 .wav / .mp3 等音频</p>
+            </div>
+            <button class="action-btn upload-btn" id="upload-btn">选择文件</button>
+            <input type="file" id="file-input" accept="audio/*" hidden>
+          </div>
+        </div>
+        <p class="input-hint">提示：录音或上传后会自动识别，识别结果与概率显示在右侧。</p>
+      </section>
+    </div>
+
+    <!-- 右栏：波形展示 + 情感预测结果 -->
+    <div class="col-right">
+      <!-- 空状态 -->
+      <section class="panel empty-panel reveal" id="empty-panel">
+        <div class="empty-icon" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <h3 class="empty-title">等待输入</h3>
+        <p class="empty-desc">录一段语音或上传音频文件，波形与识别结果将显示在这里</p>
+      </section>
+
+      <!-- 波形播放器 -->
+      <section class="panel wave-panel reveal" id="wave-panel" hidden>
+        <h2 class="panel-title">02 · 波形 WAVEFORM</h2>
+        <div class="wave-stage">
+          <canvas id="waveform" height="130"></canvas>
+          <button class="play-overlay" id="play-btn" aria-label="播放音频" disabled>
+            <span class="play-overlay-ico" id="play-ico" aria-hidden="true">▶</span>
+          </button>
+        </div>
+        <p class="wave-meta" id="wave-meta"></p>
+      </section>
+
+      <!-- 识别结果 -->
+      <section class="panel result-panel reveal" id="result-panel" hidden>
+        <div class="result-head">
+          <div>
+            <h2 class="panel-title">03 · 识别结果 RESULT</h2>
+            <p class="result-model">MODEL · WAV2VEC2-BASE</p>
+          </div>
+          <div class="result-readout">
+            <div class="result-emotion" id="result-emotion">—</div>
+            <p class="result-sub" id="result-sub"></p>
+          </div>
+        </div>
+        <div class="eq" id="eq" role="img" aria-label="四类情感概率分布"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer reveal">
+    <p>模型 wav2vec2-base 微调 · IEMOCAP 4 类 · angry / happy / sad / neutral</p>
+  </footer>
+
+  <script>
+    window.SER_LABELS = {{ labels|tojson }};
+    window.SER_LABELS_ZH = {"angry": "愤怒", "happy": "高兴", "sad": "悲伤", "neutral": "中性"};
+    /* ★ 改动：新增情感 → emoji 映射，前端标签与结果统一带表情 */
+    window.SER_LABELS_EMOJI = {"angry": "😠", "happy": "😊", "sad": "😢", "neutral": "😐"};
+  </script>
+  <!-- ★ 改动：版本号 5 → 6，强制刷新 JS 缓存 -->
+  <script src="{{ url_for('static', filename='wav2vec2.js') }}?v=6"></script>
+</body>
+</html>

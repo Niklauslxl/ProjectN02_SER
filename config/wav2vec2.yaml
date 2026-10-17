@@ -1,0 +1,33 @@
+# ---------- 模型 ----------
+model_name: models/wav2vec2-base    # 预训练模型,原来的 facebook/wav2vec2-base 改成本地路径models/wav2vec2-base  
+checkpoint_dir: checkpoints           # 权重保存目录
+checkpoint_name: WAV2VEC2_IEMOCAP     # 权重文件名前缀（实际存 <name>_best.pt / <name>_last.pt）
+
+# ---------- 数据 ----------
+data_root: datasets/IEMOCAP_PROCESSED   # 处理后数据根目录（<split>/<情感>/*.wav）
+class_labels: [angry, happy, sad, neutral]
+class_labels_zh:
+  angry: 愤怒
+  happy: 高兴
+  sad: 悲伤
+  neutral: 中性
+
+# ---------- 音频 ----------
+sample_rate: 16000        # wav2vec2 要求的采样率
+max_audio_sec: 8          # 单条音频最长秒数，超长截断（加速 + 降低显存）
+
+# ---------- 训练超参数 ----------
+epochs: 10                # 训练轮数
+batch_size: 8             # 训练 batch 大小（显存不足可降到 4）
+learning_rate: 0.00003    # AdamW 学习率（= 3e-5）
+patience: 3               # 早停：连续 N 个 epoch 验证 WA 不提升即停止
+grad_clip: 1.0            # 梯度裁剪 max_norm
+
+# ---------- 测试 ----------
+test_batch_size: 8
+checkpoint: checkpoints/WAV2VEC2_IEMOCAP_best.pt     # 测试/演示默认加载的权重（训练后自动生成）
+
+# ---------- 前端演示 ----------
+host: 127.0.0.1
+port: 5001
+max_upload_mb: 32         # 上传音频大小上限（MB）

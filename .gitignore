@@ -1,0 +1,69 @@
+# ============ Python 通用 ============
+# 字节码缓存
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 构建 / 打包产物
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+develop-eggs/
+
+# 虚拟环境（不要提交整个 venv）
+.venv/
+venv/
+env/
+ENV/
+
+# ============ 模型与训练权重（体积大，可重新生成/下载）============
+# 预训练模型（可由 transformers 自动下载 facebook/wav2vec2-base）
+models/*
+!models/.gitkeep
+
+# 训练 checkpoint（train.py 训练后自动生成）
+checkpoints/*
+!checkpoints/.gitkeep
+
+# 各类权重文件兜底
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+*.bin
+
+# ============ 数据集（IEMOCAP 为授权数据，请勿上传）============
+datasets/*
+!datasets/.gitkeep
+
+# 音频文件（原始/处理后数据）
+*.wav
+*.mp3
+*.flac
+*.m4a
+*.ogg
+
+# ============ 密钥与环境变量 ============
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# ============ 运行产物 ============
+*.log
+nohup.out
+.DS_Store
+Thumbs.db
+
+# ============ 编辑器 / IDE ============
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ============ Jupyter ============
+.ipynb_checkpoints/
